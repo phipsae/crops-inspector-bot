@@ -53,7 +53,6 @@ CROPS Assessment: [Project Name]
 Adoption Level: [Dominant / Medium / Niche / Minimal]
 CROPS-Native: [Yes (Fully covered) / Yes (Needs adoption) / Weak options only / No] — [one-line explanation]
 Aggregate Score: [X.X/10]
-Aggregate Score (excl. Privacy): [X.X/10]
 
 Use web search to verify current license, contract functions, audits, and governance. \
 Cite specific evidence (function names like blacklist(), license identifiers like BSL-1.1, \

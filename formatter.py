@@ -335,12 +335,10 @@ def _build_computed_metadata(rows: list[dict], adoption: str) -> list[str]:
             crops_native = "Unknown"
         lines.append(f"CROPS-Native: {crops_native}")
 
-    # Compute aggregates from numerical scores
+    # Compute aggregate from numerical scores
     if all(p in scores for p in required):
         aggregate = sum(scores[p] for p in required) / 4
-        aggregate_excl = (scores["CR"] + scores["O"] + scores["S"]) / 3
         lines.append(f"Aggregate Score: {aggregate:.1f}/10")
-        lines.append(f"Aggregate Score (excl. Privacy): {aggregate_excl:.1f}/10")
 
     return lines
 
