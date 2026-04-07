@@ -30,6 +30,9 @@ CREATE TABLE IF NOT EXISTS results (
     duration_seconds FLOAT,
     completed_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+CREATE INDEX IF NOT EXISTS idx_queries_user_created ON queries(user_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_queries_created ON queries(created_at);
 """
 
 
@@ -86,4 +89,33 @@ async def save_result(query_id: int, raw_response: str, model: str,
             "input_tokens, output_tokens, duration_seconds) "
             "VALUES ($1, $2, $3, $4, $5, $6)",
             query_id, raw_response, model, input_tokens, output_tokens, duration,
+        )
+
+
+async def count_user_queries_today(telegram_id: int) -> int:
+    async with _get_pool().acquire() as conn:
+        return await conn.fetchval(
+            "SELECT COUNT(*) FROM queries q "
+            "JOIN users u ON q.user_id = u.id "
+            "WHERE u.telegram_id = $1 "
+            "AND q.created_at >= date_trunc('day', now() AT TIME ZONE 'UTC')",
+            telegram_id,
+        ) or 0
+
+
+async def count_global_queries_today() -> int:
+    async with _get_pool().acquire() as conn:
+        return await conn.fetchval(
+            "SELECT COUNT(*) FROM queries "
+            "WHERE created_at >= date_trunc('day', now() AT TIME ZONE 'UTC')"
+        ) or 0
+
+
+async def last_query_at_for_user(telegram_id: int):
+    async with _get_pool().acquire() as conn:
+        return await conn.fetchval(
+            "SELECT MAX(q.created_at) FROM queries q "
+            "JOIN users u ON q.user_id = u.id "
+            "WHERE u.telegram_id = $1",
+            telegram_id,
         )

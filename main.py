@@ -16,6 +16,7 @@ import config
 import database
 import formatter
 import github_fetcher
+import rate_limit
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -155,6 +156,13 @@ async def handle_message(update: Update, context):
 
     chat_id = update.effective_chat.id
     user = update.effective_user
+
+    # Rate limit check — must run BEFORE saving query or calling API,
+    # so blocked requests don't pollute the counters.
+    decision = await rate_limit.check(user.id)
+    if not decision.allowed:
+        await update.message.reply_text(decision.reason)
+        return
 
     # Acknowledge immediately
     status_msg = await update.message.reply_text(
