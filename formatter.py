@@ -17,17 +17,15 @@ def format_for_telegram(raw_markdown: str) -> list[str]:
     # Parse the score card
     title = _extract_title(raw_markdown)
     rows = _parse_score_table(raw_markdown)
-    raw_metadata = _extract_metadata(raw_markdown)
 
     if not _has_complete_score_table(rows):
         return _split_messages(escape(raw_markdown))
 
     # Compute correct aggregates and CROPS-Native from the parsed scores
     # (overriding whatever the model wrote — it makes math and logic errors)
-    adoption = _extract_adoption(raw_metadata)
     # Override numerical scores with flat Pass/Weak/Fail mapping (10/5/0)
     _apply_score_matrix(rows)
-    computed_metadata = _build_computed_metadata(rows, adoption)
+    computed_metadata = _build_computed_metadata(rows)
 
     parts: list[str] = []
 
@@ -67,7 +65,7 @@ def format_for_telegram(raw_markdown: str) -> list[str]:
             parts.append(_render_reason_html(reason_text))
         parts.append("")  # blank line between properties
 
-    # Metadata (adoption from model, CROPS-native + aggregates computed in Python)
+    # Metadata (CROPS-Native verdict and aggregate score, both computed in Python)
     for line in computed_metadata:
         if ":" in line:
             label, value = line.split(":", 1)
@@ -87,10 +85,9 @@ def format_for_telegram(raw_markdown: str) -> list[str]:
 SCORING_EXPLANATION = (
     "<i>How scoring works: each property is scored <b>Pass = 10</b>, "
     "<b>Weak = 5</b>, or <b>Fail = 0</b>. Aggregate is the average across all "
-    "four properties. Adoption is shown as a separate label and affects the "
-    "CROPS-Native verdict (Fully Covered vs Needs Adoption), but not the "
-    "numerical scores — those reflect the protocol's properties, not its "
-    "market share.</i>"
+    "four properties. The CROPS-Native verdict is <b>Yes</b> when all four pass, "
+    "<b>Weak options only</b> when at least one is Weak (none Fail), and "
+    "<b>No</b> when any property fails.</i>"
 )
 
 
@@ -106,27 +103,44 @@ def _extract_title(md: str) -> str:
     return ""
 
 
+_REQUIRED_PROPERTIES: frozenset[str] = frozenset({"CR", "O", "P", "S"})
+_METADATA_MARKERS = ("crops-native", "aggregate score")
+
+
 def _parse_score_table(md: str) -> list[dict]:
-    """Parse the Property | Score | Numerical | Reason table."""
+    """Parse the Property | Score | Numerical | Reason table.
+
+    Robust to blank/non-pipe lines between rows: keeps scanning until a
+    metadata marker (CROPS-Native, Aggregate Score) or markdown heading is
+    reached, or all four CR/O/P/S rows have been collected. The previous
+    version broke out of the loop at the first non-pipe line, which caused
+    fall-through to the raw-markdown fallback whenever the model emitted a
+    blank line or a citation continuation between rows.
+    """
     rows: list[dict] = []
     lines = md.split("\n")
     in_table = False
+    found: set[str] = set()
 
     for line in lines:
         stripped = line.strip()
+
         if not stripped.startswith("|"):
-            if in_table:
-                break  # end of table
+            lower = stripped.lower()
+            # End of table only when we hit metadata / a new section.
+            if in_table and (lower.startswith(_METADATA_MARKERS) or stripped.startswith("#")):
+                break
+            # Otherwise (blank lines, citation continuations, prose): keep scanning.
             continue
 
         cells = [c.strip() for c in stripped.split("|")[1:-1]]
 
-        # Skip separator rows
+        # Skip separator rows (|---|---|...)
         if cells and all(re.match(r"^[-:]+$", c) for c in cells):
             in_table = True
             continue
 
-        # Skip header row (contains "Property" or "Score")
+        # Skip header row (contains "Property")
         if cells and any("property" in c.lower() for c in cells):
             in_table = True
             continue
@@ -139,8 +153,12 @@ def _parse_score_table(md: str) -> list[dict]:
         numerical = cells[2].strip() if len(cells) > 2 else ""
         reason = " | ".join(cells[3:]).strip() if len(cells) > 3 else ""
 
-        # Extract short property name (CR, O, P, S)
         short = _property_short(prop)
+
+        # Only keep rows matching one of the four canonical CROPS properties.
+        # Rejects spurious lines that happen to start with `|`.
+        if short not in _REQUIRED_PROPERTIES:
+            continue
 
         rows.append({
             "property": prop,
@@ -149,6 +167,11 @@ def _parse_score_table(md: str) -> list[dict]:
             "numerical": numerical,
             "reason": reason,
         })
+        found.add(short)
+
+        # Early exit once all four are collected.
+        if found == _REQUIRED_PROPERTIES:
+            break
 
     return rows
 
@@ -175,19 +198,6 @@ def _property_short(prop: str) -> str:
     if m:
         return m.group(1)
     return prop[:2]
-
-
-def _extract_metadata(md: str) -> list[str]:
-    """Extract non-table metadata lines (Adoption, CROPS-Native, Aggregate)."""
-    metadata: list[str] = []
-    for line in md.split("\n"):
-        stripped = line.strip()
-        if not stripped or stripped.startswith("|") or stripped.startswith("#"):
-            continue
-        lower = stripped.lower()
-        if any(k in lower for k in ["adoption level", "crops-native", "aggregate score"]):
-            metadata.append(stripped)
-    return metadata
 
 
 _MD_LINK_RE = re.compile(r"\[([^\]]+)\]\((https?://[^\s)]+)\)")
@@ -252,10 +262,9 @@ def _parse_numerical(numerical: str) -> float | None:
     return None
 
 
-# Flat categorical-only scoring. Adoption is shown separately as a label and
-# influences only the CROPS-Native verdict (Fully Covered vs Needs Adoption),
-# not the per-property numerical scores. This keeps numbers honest about
-# property quality, which is what users asking "is X CROPS?" actually want.
+# Flat categorical-only scoring: numerical reflects only property quality
+# (Pass/Weak/Fail), with no adoption multiplier. This keeps numbers honest
+# about property quality, which is what users asking "is X CROPS?" want.
 SCORE_MATRIX: dict[str, float] = {
     "pass": 10,
     "weak": 5,
@@ -286,17 +295,7 @@ def _apply_score_matrix(rows: list[dict]) -> None:
             row["numerical"] = _format_num(n)
 
 
-def _extract_adoption(metadata: list[str]) -> str:
-    """Extract the adoption level value from metadata lines."""
-    for line in metadata:
-        if line.lower().startswith("adoption level"):
-            parts = line.split(":", 1)
-            if len(parts) == 2:
-                return parts[1].strip()
-    return ""
-
-
-def _build_computed_metadata(rows: list[dict], adoption: str) -> list[str]:
+def _build_computed_metadata(rows: list[dict]) -> list[str]:
     """Build the metadata section with computed aggregates and CROPS-Native status."""
     # Parse numerical scores by property
     scores: dict[str, float] = {}
@@ -312,9 +311,6 @@ def _build_computed_metadata(rows: list[dict], adoption: str) -> list[str]:
 
     lines: list[str] = []
 
-    if adoption:
-        lines.append(f"Adoption Level: {adoption}")
-
     # Derive CROPS-Native status from categorical scores
     required = ["CR", "O", "P", "S"]
     if all(p in categoricals for p in required):
@@ -323,14 +319,11 @@ def _build_computed_metadata(rows: list[dict], adoption: str) -> list[str]:
         weaks = [p for p in required if categoricals[p] == "weak"]
 
         if fails:
-            crops_native = f"No — fails {', '.join(fails)}"
+            crops_native = f"No: fails {', '.join(fails)}"
         elif weaks:
-            crops_native = f"Weak options only — weak on {', '.join(weaks)}"
+            crops_native = f"Weak options only: weak on {', '.join(weaks)}"
         elif all(s == "pass" for s in statuses):
-            if adoption.lower() in ("dominant", "medium"):
-                crops_native = "Yes (Fully covered) — all four properties pass"
-            else:
-                crops_native = "Yes (Needs adoption) — all four pass but adoption is limited"
+            crops_native = "Yes: all four properties pass"
         else:
             crops_native = "Unknown"
         lines.append(f"CROPS-Native: {crops_native}")

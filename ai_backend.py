@@ -50,8 +50,7 @@ CROPS Assessment: [Project Name]
 | Privacy (P) | [Pass/Weak/Fail] | [X/10] | [specific evidence] |
 | Security (S) | [Pass/Weak/Fail] | [X/10] | [specific evidence: audits, governance] |
 
-Adoption Level: [Dominant / Medium / Niche / Minimal]
-CROPS-Native: [Yes (Fully covered) / Yes (Needs adoption) / Weak options only / No] — [one-line explanation]
+CROPS-Native: [Yes / Weak options only / No]: [one-line explanation]
 Aggregate Score: [X.X/10]
 
 Use web search to verify current license, contract functions, audits, and governance. \

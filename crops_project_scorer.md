@@ -85,7 +85,6 @@ These come directly from the Ethereum Foundation mandate and are non-negotiable.
 
 - CROPS is an indivisible whole. Great on three properties but failing on one = not CROPS-native.
 - Look at what projects optimize for in PRACTICE, not what they claim. Projects using CROPS language but keeping closed moats, whitelisted provider sets, or soft defaults that steer flow through preferred paths = Weak or Fail.
-- Adoption levels must reflect ACTUAL usage. If 90% of users go through a centralized front-end or RPC provider, the decentralized alternative is Niche even if it technically works.
 
 ## 4. Cross-Layer and Intermediation Tests (from Mandate v2.0)
 
@@ -145,36 +144,19 @@ Each CROPS property is scored independently:
 - **Weak**: Partial satisfaction with significant caveats
 - **Fail**: The project does not satisfy this property
 
-### Adoption Level
-Assess actual usage, not theoretical capability:
-- **Dominant**: Used by the majority of users in its space (e.g., MetaMask for wallets)
-- **Medium**: Significant user base, well-known, but not the default choice
-- **Niche**: Works but used by a small community; most users don't know about it
-- **Minimal**: Exists but barely used; early stage or abandoned
-
 ### Numerical Scoring (0-10)
-Each property gets a numerical score that combines the categorical score with adoption level:
+Each property's numerical score is fixed by the categorical score, with no adoption multiplier:
 
-| Property Score | Adoption | Numerical Score |
-|---------------|----------|-----------------|
-| Pass | Dominant | 10 |
-| Pass | Medium | 8 |
-| Pass | Niche | 5 |
-| Pass | Minimal | 3.5 |
-| Weak | Dominant | 3 |
-| Weak | Medium | 2 |
-| Weak | Niche | 1.5 |
-| Weak | Minimal | 1 |
-| Fail | Any | 0 |
+| Property Score | Numerical Score |
+|---------------|-----------------|
+| Pass | 10 |
+| Weak | 5 |
+| Fail | 0 |
 
 **Aggregate Score** = average of all four numerical scores (CR + O + P + S) / 4
-**Aggregate Score (excl. Privacy)** = average of (CR + O + S) / 3
-
-The aggregate excluding privacy is provided because privacy is the ecosystem's universal failure (84% of projects fail P outright), so this score shows how a project performs on the other three properties independently.
 
 ### CROPS-Native Status
-- **Yes (Fully covered)**: All four properties Pass, adoption is Dominant or Medium
-- **Yes (Needs adoption)**: All four properties Pass, adoption is Niche or Minimal
+- **Yes**: All four properties Pass
 - **Weak options only**: All properties are Pass or Weak (at least one Weak, none Fail)
 - **No**: At least one property is Fail
 
@@ -183,8 +165,7 @@ The aggregate excluding privacy is provided because privacy is the ecosystem's u
 2. **Privacy must be protocol-level and default.** An optional "private mode" is Weak, not Pass. The question is: does the protocol itself provide privacy by default when you use it?
 3. **Walkaway test is mandatory for Security.** If the founding team disappears tomorrow, does the protocol keep working? Can users exit without complex migrations?
 4. **Look at practice, not claims.** Projects using CROPS language but keeping closed moats, whitelisted provider sets, or soft defaults that steer flow through preferred paths score Weak or Fail.
-5. **Adoption context matters.** If 90% of users go through a centralized frontend or RPC provider, the decentralized alternative is Niche even if it technically works.
-6. **Censorable collateral = CR Weak.** If a protocol depends on censorable collateral (e.g. USDC-backed stablecoin) where seizure would break core functionality, it is CR Weak.
+5. **Censorable collateral = CR Weak.** If a protocol depends on censorable collateral (e.g. USDC-backed stablecoin) where seizure would break core functionality, it is CR Weak.
 
 ## 7. Calibration Examples
 
@@ -192,39 +173,39 @@ These 10 examples were web-researched and fact-checked in March 2026. Use them t
 
 **Centralized stablecoins:**
 
-| USDC (Circle) | No | Fail | Built-in blacklist() function; 372 addresses blacklisted ($109M frozen on Ethereum); froze all Tornado Cash-associated addresses within hours of OFAC designation (Aug 2022); Pauser role can halt ALL transfers globally; Circle unilaterally controls freeze decisions. | Weak | Smart contracts Apache-2.0 on GitHub (circlefin/stablecoin-evm); but mint/redeem/reserve infrastructure entirely proprietary and closed-source; a fork of the contract is valueless without Circle's banking relationships and regulatory licenses. | Fail | All transactions fully public on-chain; Circle collects extensive PII (name, DOB, tax ID, address) per KYC/PATRIOT Act requirements for Circle Mint accounts; no privacy features in production USDC. | Weak | Deloitte-attested reserves (majority in BlackRock money market fund); upgradeable proxy — proxy-admin can replace all contract logic; walkaway test fails — depegged to $0.87 during SVB crisis (Mar 2023) when $3.3B reserves were stuck; MasterMinter and Blacklister roles historically single EOAs. | Dominant |
+| USDC (Circle) | No | Fail | Built-in blacklist() function; 372 addresses blacklisted ($109M frozen on Ethereum); froze all Tornado Cash-associated addresses within hours of OFAC designation (Aug 2022); Pauser role can halt ALL transfers globally; Circle unilaterally controls freeze decisions. | Weak | Smart contracts Apache-2.0 on GitHub (circlefin/stablecoin-evm); but mint/redeem/reserve infrastructure entirely proprietary and closed-source; a fork of the contract is valueless without Circle's banking relationships and regulatory licenses. | Fail | All transactions fully public on-chain; Circle collects extensive PII (name, DOB, tax ID, address) per KYC/PATRIOT Act requirements for Circle Mint accounts; no privacy features in production USDC. | Weak | Deloitte-attested reserves (majority in BlackRock money market fund); upgradeable proxy — proxy-admin can replace all contract logic; walkaway test fails — depegged to $0.87 during SVB crisis (Mar 2023) when $3.3B reserves were stuck; MasterMinter and Blacklister roles historically single EOAs. |
 
-| USDT (Tether) | No | Fail | addBlackList() and destroyBlackFunds() functions; 7,268 addresses blacklisted, $3.3B frozen (2023-2025); active law enforcement collaboration ($2.8B frozen across 4,500+ wallets with US agencies); 3-of-6 multisig controls global pause with no role separation. | Weak | Contract source visible on Etherscan and GitHub (tethercoin/USDT) but repo has no LICENSE file — legally source-available, not open source; all mint/redeem/reserve infrastructure proprietary and closed. | Fail | All transactions fully public on-chain (314M+ on Ethereum); actively collaborates with Chainalysis and law enforcement for tracing; KYC required for direct minting; zero privacy features. | Weak | Never had a full independent audit — only quarterly BDO attestations (point-in-time, negative assurance); S&P downgraded to 'weak' (5/5) Nov 2025; Solidity 0.4.17 (ancient); 3-of-6 multisig controls everything with no role separation or timelock; walkaway test: total failure — peg collapses without Tether Ltd. | Dominant |
+| USDT (Tether) | No | Fail | addBlackList() and destroyBlackFunds() functions; 7,268 addresses blacklisted, $3.3B frozen (2023-2025); active law enforcement collaboration ($2.8B frozen across 4,500+ wallets with US agencies); 3-of-6 multisig controls global pause with no role separation. | Weak | Contract source visible on Etherscan and GitHub (tethercoin/USDT) but repo has no LICENSE file — legally source-available, not open source; all mint/redeem/reserve infrastructure proprietary and closed. | Fail | All transactions fully public on-chain (314M+ on Ethereum); actively collaborates with Chainalysis and law enforcement for tracing; KYC required for direct minting; zero privacy features. | Weak | Never had a full independent audit — only quarterly BDO attestations (point-in-time, negative assurance); S&P downgraded to 'weak' (5/5) Nov 2025; Solidity 0.4.17 (ancient); 3-of-6 multisig controls everything with no role separation or timelock; walkaway test: total failure — peg collapses without Tether Ltd. |
 
 **Decentralized stablecoins (strong CR/O/S, fail P):**
 
-| RAI (Reflexer) | No | Pass | No blacklist/freeze/pause functions in contracts; permissionless minting — anyone with ETH can open a SAFE; 'ungovernance' design progressively revoked all admin controls (Phase 1: Apr 2022, Phase 2: Aug 2022); FLX is literally the 'Ungovernance Token'. | Pass | AGPL-3.0 license; 144 repos on GitHub (reflexer-labs); all audit reports publicly available (geb-audits repo); fully forkable. | Fail | Standard ERC-20 on public Ethereum; all minting, transfers, SAFE operations fully visible on-chain; no privacy features whatsoever. | Pass | Audited by OpenZeppelin (1 high — fixed, 8 medium), Quantstamp, and Solidified; walkaway test proven in practice — team wound down, protocol ran autonomously, Global Settlement executed as designed mid-2025; governance-minimized immutable contracts. Note: RAI v1 globally settled (~$2M TVL remaining). | Minimal |
+| RAI (Reflexer) | No | Pass | No blacklist/freeze/pause functions in contracts; permissionless minting — anyone with ETH can open a SAFE; 'ungovernance' design progressively revoked all admin controls (Phase 1: Apr 2022, Phase 2: Aug 2022); FLX is literally the 'Ungovernance Token'. | Pass | AGPL-3.0 license; 144 repos on GitHub (reflexer-labs); all audit reports publicly available (geb-audits repo); fully forkable. | Fail | Standard ERC-20 on public Ethereum; all minting, transfers, SAFE operations fully visible on-chain; no privacy features whatsoever. | Pass | Audited by OpenZeppelin (1 high — fixed, 8 medium), Quantstamp, and Solidified; walkaway test proven in practice — team wound down, protocol ran autonomously, Global Settlement executed as designed mid-2025; governance-minimized immutable contracts. Note: RAI v1 globally settled (~$2M TVL remaining). |
 
-| LUSD (Liquity V1) | No | Pass | Zero admin functions — no blacklist, freeze, or pause; permissionless minting at 110% collateralization; fully immutable contracts deployed Apr 2021 (no proxy, no upgrade mechanism, no admin keys, no governance); decentralized frontend model. | Pass | GPL-3.0 license; all code on GitHub (liquity/dev — 352 stars, 339 forks); 35+ forks on DeFiLlama proving real-world forkability (Prisma, Gravita, etc.). Note: Liquity V2 (BOLD) uses BSL — only V1 passes O. | Fail | Standard ERC-20 on Ethereum; every mint, transfer, redemption, and Stability Pool deposit publicly visible; no privacy features. | Pass | Audited by Trail of Bits (3 audits, Jan+Mar 2021) and Coinspect (1 high found and fixed); zero exploits in ~5 years of operation; no admin keys, no governance, no multisig — all parameters hardcoded; perfect walkaway test. | Niche |
+| LUSD (Liquity V1) | No | Pass | Zero admin functions — no blacklist, freeze, or pause; permissionless minting at 110% collateralization; fully immutable contracts deployed Apr 2021 (no proxy, no upgrade mechanism, no admin keys, no governance); decentralized frontend model. | Pass | GPL-3.0 license; all code on GitHub (liquity/dev — 352 stars, 339 forks); 35+ forks on DeFiLlama proving real-world forkability (Prisma, Gravita, etc.). Note: Liquity V2 (BOLD) uses BSL — only V1 passes O. | Fail | Standard ERC-20 on Ethereum; every mint, transfer, redemption, and Stability Pool deposit publicly visible; no privacy features. | Pass | Audited by Trail of Bits (3 audits, Jan+Mar 2021) and Coinspect (1 high found and fixed); zero exploits in ~5 years of operation; no admin keys, no governance, no multisig — all parameters hardcoded; perfect walkaway test. |
 
 **Wallet:**
 
-| MetaMask | No | Fail | Default RPC (Infura) geo-blocks sanctioned countries (Iran, North Korea, Cuba, Syria, Crimea/Donetsk/Luhansk); ConsenSys ToS grants broad discretionary termination rights; distributed via Chrome Web Store — removed twice (Jul 2018, Dec 2019). | Fail | NOT MIT — switched to proprietary ConsenSys license in Aug 2020; commercial use above 10,000 MAU requires ConsenSys license agreement; source-available but not open source by OSI definition. | Fail | ConsenSys confirmed (Nov 2022) Infura logs IP addresses linked to wallet addresses on write requests; all transaction metadata visible to default RPC provider; no built-in privacy features. | Weak | Browser extension phishing vector (multiple incidents: $3M+ ADSPower hack Jan 2025, BlueNoroff fake extensions); npm supply chain risk (Sep 2025 attack targeted window.ethereum across 18 packages); ConsenSys sole publisher controlling update pipeline — no governance minimization, single company decides what code 30M+ users run. Walkaway test: users can migrate via seed phrases, but no alternative update path for MetaMask itself. | Dominant |
+| MetaMask | No | Fail | Default RPC (Infura) geo-blocks sanctioned countries (Iran, North Korea, Cuba, Syria, Crimea/Donetsk/Luhansk); ConsenSys ToS grants broad discretionary termination rights; distributed via Chrome Web Store — removed twice (Jul 2018, Dec 2019). | Fail | NOT MIT — switched to proprietary ConsenSys license in Aug 2020; commercial use above 10,000 MAU requires ConsenSys license agreement; source-available but not open source by OSI definition. | Fail | ConsenSys confirmed (Nov 2022) Infura logs IP addresses linked to wallet addresses on write requests; all transaction metadata visible to default RPC provider; no built-in privacy features. | Weak | Browser extension phishing vector (multiple incidents: $3M+ ADSPower hack Jan 2025, BlueNoroff fake extensions); npm supply chain risk (Sep 2025 attack targeted window.ethereum across 18 packages); ConsenSys sole publisher controlling update pipeline — no governance minimization, single company decides what code 30M+ users run. Walkaway test: users can migrate via seed phrases, but no alternative update path for MetaMask itself. |
 
 **DEX (protocol vs frontend split):**
 
-| Uniswap | No | Weak | Protocol contracts are immutable with no pause/block; but frontend blocks 253+ addresses via TRM Labs (OFAC compliance, Aug 2022); 100+ tokens delisted from frontend (Jul 2021); geographic restrictions. Smart contracts remain accessible via alternative frontends. | Weak | V1/V2 GPL; V3 was BSL-1.1 (expired Apr 2023, now GPL); V4 (current) BSL-1.1 until ~2027. Active version is source-available but not open source. | Fail | All swaps fully public on-chain; $900M+ extracted via MEV sandwich attacks in 2023. Uniswap Wallet has Flashbots Protect and UniswapX — but app-layer, optional, not protocol-level privacy. | Pass | 9+ audits (Trail of Bits, OpenZeppelin, Certora, ABDK, Spearbit); V4 $15.5M bug bounty (largest in DeFi), 500+ researchers — no critical vulns; no core contract exploit; immutable core contracts with no admin keys; passes walkaway test. Governance caveat: UNI token holders control fee switch via 2-day timelock (activated Dec 2025). V4 hooks introduce third-party trust assumptions at composability layer. | Dominant |
+| Uniswap | No | Weak | Protocol contracts are immutable with no pause/block; but frontend blocks 253+ addresses via TRM Labs (OFAC compliance, Aug 2022); 100+ tokens delisted from frontend (Jul 2021); geographic restrictions. Smart contracts remain accessible via alternative frontends. | Weak | V1/V2 GPL; V3 was BSL-1.1 (expired Apr 2023, now GPL); V4 (current) BSL-1.1 until ~2027. Active version is source-available but not open source. | Fail | All swaps fully public on-chain; $900M+ extracted via MEV sandwich attacks in 2023. Uniswap Wallet has Flashbots Protect and UniswapX — but app-layer, optional, not protocol-level privacy. | Pass | 9+ audits (Trail of Bits, OpenZeppelin, Certora, ABDK, Spearbit); V4 $15.5M bug bounty (largest in DeFi), 500+ researchers — no critical vulns; no core contract exploit; immutable core contracts with no admin keys; passes walkaway test. Governance caveat: UNI token holders control fee switch via 2-day timelock (activated Dec 2025). V4 hooks introduce third-party trust assumptions at composability layer. |
 
 **Liquid staking (governance concentration):**
 
-| Lido | No | Weak | Curated (permissioned) node operator set holds ~98.3% of stake (37 operators, DAO-selected); Community Staking Module permissionless but only ~1.67% of total; GateSeal 3-of-6 multisig can pause protocol up to 14 days without DAO vote; no individual stETH blacklist. | Pass | GPL-3.0 license; all contracts on GitHub (lidofinance/core); already forked multiple times. | Fail | All staking deposits, stETH balances, rebases, and transfers fully public and traceable on-chain; no privacy features; no shielded staking. | Weak | 111 audit reports (Certora, OpenZeppelin, ChainSecurity, ConsenSys Diligence, etc.); but LDO governance can upgrade all contracts and top 10 holders control >50% of LDO (quorum only 5%); 24.2% of all staked ETH (systemic concentration risk); oracle key compromised May 2025. | Dominant |
+| Lido | No | Weak | Curated (permissioned) node operator set holds ~98.3% of stake (37 operators, DAO-selected); Community Staking Module permissionless but only ~1.67% of total; GateSeal 3-of-6 multisig can pause protocol up to 14 days without DAO vote; no individual stETH blacklist. | Pass | GPL-3.0 license; all contracts on GitHub (lidofinance/core); already forked multiple times. | Fail | All staking deposits, stETH balances, rebases, and transfers fully public and traceable on-chain; no privacy features; no shielded staking. | Weak | 111 audit reports (Certora, OpenZeppelin, ChainSecurity, ConsenSys Diligence, etc.); but LDO governance can upgrade all contracts and top 10 holders control >50% of LDO (quorum only 5%); 24.2% of all staked ETH (systemic concentration risk); oracle key compromised May 2025. |
 
 **NFT marketplace (centralized platform, open protocol):**
 
-| OpenSea | No | Fail | Blocks 26+ sanctioned countries; deplatformed Iranian and Cuban artists without warning; freezes NFTs flagged as stolen at will; centralized content moderation with broad ToS authority. | Weak | Seaport protocol is MIT-licensed and open source (no owner/admin); but frontend, backend, API, indexing entirely proprietary; 99%+ of users interact only through the proprietary layer. | Fail | Collects email, IP, device ID, wallet address per privacy policy; links on-chain identity to off-chain PII; 7M+ emails leaked Jun 2022 (confirmed public Jan 2025). | Weak | Seaport triple-audited (OpenZeppelin, Trail of Bits, Code4rena $1M contest); but platform incidents: Feb 2022 phishing ($2M), Discord hack, API breach, insider trading conviction; walkaway: NFTs survive on-chain but marketplace layer vanishes. | Dominant |
+| OpenSea | No | Fail | Blocks 26+ sanctioned countries; deplatformed Iranian and Cuban artists without warning; freezes NFTs flagged as stolen at will; centralized content moderation with broad ToS authority. | Weak | Seaport protocol is MIT-licensed and open source (no owner/admin); but frontend, backend, API, indexing entirely proprietary; 99%+ of users interact only through the proprietary layer. | Fail | Collects email, IP, device ID, wallet address per privacy policy; links on-chain identity to off-chain PII; 7M+ emails leaked Jun 2022 (confirmed public Jan 2025). | Weak | Seaport triple-audited (OpenZeppelin, Trail of Bits, Code4rena $1M contest); but platform incidents: Feb 2022 phishing ($2M), Discord hack, API breach, insider trading conviction; walkaway: NFTs survive on-chain but marketplace layer vanishes. |
 
 **Lending (BSL + governance power):**
 
-| Aave | No | Weak | Frontend blocked 600+ addresses via TRM Labs after Tornado Cash sanctions (Aug 2022); smart contracts permissionless but Guardian 5-of-9 multisig can freeze entire markets; governance could theoretically add blocklists. | Fail | V3 uses BSL-1.1 (converts to MIT Mar 2027); V4 proposed under BSL-1.1 with ~5-year restriction; BSL = automatic O failure per CROPS rules. | Fail | All positions, collateral, debt, and health factors fully public on-chain; whale positions tracked by Nansen/Arkham; no privacy features; Aave Horizon moves toward more KYC. | Weak | 70+ audits (Trail of Bits, OpenZeppelin, Certora formal verification, etc.); no core exploit in 5+ years; $246M safety module; $1M bug bounty — strongest audit record in DeFi. However: Guardian 5-of-9 multisig can freeze entire markets (social layer overriding protocol guarantees); governance can upgrade all contracts; BGD Labs and ACI both departing DAO (Mar 2026); Aave Labs controls brand/website/comms (not DAO-owned). Walkaway test: contracts persist but development and emergency response degrade. | Dominant |
+| Aave | No | Weak | Frontend blocked 600+ addresses via TRM Labs after Tornado Cash sanctions (Aug 2022); smart contracts permissionless but Guardian 5-of-9 multisig can freeze entire markets; governance could theoretically add blocklists. | Fail | V3 uses BSL-1.1 (converts to MIT Mar 2027); V4 proposed under BSL-1.1 with ~5-year restriction; BSL = automatic O failure per CROPS rules. | Fail | All positions, collateral, debt, and health factors fully public on-chain; whale positions tracked by Nansen/Arkham; no privacy features; Aave Horizon moves toward more KYC. | Weak | 70+ audits (Trail of Bits, OpenZeppelin, Certora formal verification, etc.); no core exploit in 5+ years; $246M safety module; $1M bug bounty — strongest audit record in DeFi. However: Guardian 5-of-9 multisig can freeze entire markets (social layer overriding protocol guarantees); governance can upgrade all contracts; BGD Labs and ACI both departing DAO (Mar 2026); Aave Labs controls brand/website/comms (not DAO-owned). Walkaway test: contracts persist but development and emergency response degrade. |
 
 **Privacy tool:**
 
-| Privacy Pools (0xbow) | No | Weak | Upgradeable proxy (UUPS, ERC1967) with OWNER_ROLE holder not publicly documented; 0xbow is the only operating ASP — single gatekeeper for deposit approval; ragequit allows public fund recovery but at cost of privacy. Contracts upgraded at least once. | Pass | Apache-2.0 license; full source on GitHub (0xbow-io/privacy-pools-core — 437 commits); ASP code also open source; forkable. | Pass | Groth16 zk-SNARKs cryptographically break sender-receiver link; privacy is the default and only mode within the protocol (no transparent option); no identity or KYC required — ASP screens on-chain deposit sources, not user identity. Protocol-level privacy, not application-layer. Caveats: small anonymity set (~1,500 users) weakens practical privacy; deposits/withdrawals visible on-chain (inherent to any pool on a public chain). | Weak | Audited by OXORIO (prevented vulnerable version release); 514-contributor trusted setup; ragequit safety valve ensures fund access. However: upgradeable proxy (UUPS) with undocumented OWNER_ROLE — admin can replace all contract logic, no public timelock or multisig documentation (governance override risk). ~12 months old (launched Mar 2025); single-ASP operational dependency; contracts upgraded at least once. Integrated into EF Kohaku toolkit. | Niche |
+| Privacy Pools (0xbow) | No | Weak | Upgradeable proxy (UUPS, ERC1967) with OWNER_ROLE holder not publicly documented; 0xbow is the only operating ASP — single gatekeeper for deposit approval; ragequit allows public fund recovery but at cost of privacy. Contracts upgraded at least once. | Pass | Apache-2.0 license; full source on GitHub (0xbow-io/privacy-pools-core — 437 commits); ASP code also open source; forkable. | Pass | Groth16 zk-SNARKs cryptographically break sender-receiver link; privacy is the default and only mode within the protocol (no transparent option); no identity or KYC required — ASP screens on-chain deposit sources, not user identity. Protocol-level privacy, not application-layer. Caveats: small anonymity set (~1,500 users) weakens practical privacy; deposits/withdrawals visible on-chain (inherent to any pool on a public chain). | Weak | Audited by OXORIO (prevented vulnerable version release); 514-contributor trusted setup; ragequit safety valve ensures fund access. However: upgradeable proxy (UUPS) with undocumented OWNER_ROLE — admin can replace all contract logic, no public timelock or multisig documentation (governance override risk). ~12 months old (launched Mar 2025); single-ASP operational dependency; contracts upgraded at least once. Integrated into EF Kohaku toolkit. |
 
 ## 8. Common Failure Patterns
 
@@ -291,10 +272,8 @@ CROPS Assessment: [Project Name]
 | Privacy (P) | [Pass/Weak/Fail] | [X/10] | [specific evidence] |
 | Security (S) | [Pass/Weak/Fail] | [X/10] | [specific evidence] |
 
-Adoption Level: [Dominant / Medium / Niche / Minimal]
-CROPS-Native: [Yes (Fully covered) / Yes (Needs adoption) / Weak options only / No] — [one-line explanation]
+CROPS-Native: [Yes / Weak options only / No]: [one-line explanation]
 Aggregate Score: [X.X/10]
-Aggregate Score (excl. Privacy): [X.X/10]
 ```
 
 ### Assessment Guidelines
@@ -306,8 +285,6 @@ Aggregate Score (excl. Privacy): [X.X/10]
 3. **Apply anti-bleed rules strictly.** Blacklist functions go in CR, not S. BSL licensing goes in O, not S. IP logging goes in P, not S. Governance override power goes in S, not CR. If you find yourself putting evidence in the wrong column, stop and re-read Section 5.
 
 4. **One project, one assessment.** If a project has multiple versions (e.g., Uniswap V2 vs V4, Liquity V1 vs V2), assess the CURRENT active version that most users interact with. Note version differences where relevant.
-
-5. **Adoption must reflect reality.** If a project is technically functional but nobody uses it, it's Minimal. If 90% of users go through one centralized frontend, the "decentralized alternative" is Niche.
 
 ---
 
