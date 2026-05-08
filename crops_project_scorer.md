@@ -145,7 +145,7 @@ Each CROPS property is scored independently:
 - **Fail**: The project does not satisfy this property
 
 ### Numerical Scoring (0-10)
-Each property's numerical score is fixed by the categorical score, with no adoption multiplier:
+Each property's numerical score is fixed by the categorical score:
 
 | Property Score | Numerical Score |
 |---------------|-----------------|
@@ -170,6 +170,8 @@ Each property's numerical score is fixed by the categorical score, with no adopt
 ## 7. Calibration Examples
 
 These 10 examples were web-researched and fact-checked in March 2026. Use them to calibrate your sense of what Pass, Fail, and Weak look like across diverse project types. Every claim cites specific numbers, dates, function names, or audit firms -- never vague assertions.
+
+Each row encodes: Project | CROPS-Native verdict | CR (Pass/Weak/Fail) | CR evidence | O | O evidence | P | P evidence | S | S evidence.
 
 **Centralized stablecoins:**
 
@@ -205,7 +207,7 @@ These 10 examples were web-researched and fact-checked in March 2026. Use them t
 
 **Privacy tool:**
 
-| Privacy Pools (0xbow) | No | Weak | Upgradeable proxy (UUPS, ERC1967) with OWNER_ROLE holder not publicly documented; 0xbow is the only operating ASP — single gatekeeper for deposit approval; ragequit allows public fund recovery but at cost of privacy. Contracts upgraded at least once. | Pass | Apache-2.0 license; full source on GitHub (0xbow-io/privacy-pools-core — 437 commits); ASP code also open source; forkable. | Pass | Groth16 zk-SNARKs cryptographically break sender-receiver link; privacy is the default and only mode within the protocol (no transparent option); no identity or KYC required — ASP screens on-chain deposit sources, not user identity. Protocol-level privacy, not application-layer. Caveats: small anonymity set (~1,500 users) weakens practical privacy; deposits/withdrawals visible on-chain (inherent to any pool on a public chain). | Weak | Audited by OXORIO (prevented vulnerable version release); 514-contributor trusted setup; ragequit safety valve ensures fund access. However: upgradeable proxy (UUPS) with undocumented OWNER_ROLE — admin can replace all contract logic, no public timelock or multisig documentation (governance override risk). ~12 months old (launched Mar 2025); single-ASP operational dependency; contracts upgraded at least once. Integrated into EF Kohaku toolkit. |
+| Privacy Pools (0xbow) | Weak options only | Weak | Upgradeable proxy (UUPS, ERC1967) with OWNER_ROLE holder not publicly documented; 0xbow is the only operating ASP — single gatekeeper for deposit approval; ragequit allows public fund recovery but at cost of privacy. Contracts upgraded at least once. | Pass | Apache-2.0 license; full source on GitHub (0xbow-io/privacy-pools-core — 437 commits); ASP code also open source; forkable. | Pass | Groth16 zk-SNARKs cryptographically break sender-receiver link; privacy is the default and only mode within the protocol (no transparent option); no identity or KYC required — ASP screens on-chain deposit sources, not user identity. Protocol-level privacy, not application-layer. Caveats: small anonymity set (~1,500 users) weakens practical privacy; deposits/withdrawals visible on-chain (inherent to any pool on a public chain). | Weak | Audited by OXORIO (prevented vulnerable version release); 514-contributor trusted setup; ragequit safety valve ensures fund access. However: upgradeable proxy (UUPS) with undocumented OWNER_ROLE — admin can replace all contract logic, no public timelock or multisig documentation (governance override risk). ~12 months old (launched Mar 2025); single-ASP operational dependency; contracts upgraded at least once. Integrated into EF Kohaku toolkit. |
 
 ## 8. Common Failure Patterns
 
